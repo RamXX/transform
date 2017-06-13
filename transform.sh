@@ -21,7 +21,12 @@ if [ "$(echo $URL | grep :// | sed -e's,^\(.*://\).*,\1,g')" != "https://" ]; th
 fi
 
 fname="$(echo $URL | grep / | cut -d/ -f5-)"
-version="$(echo $fname | grep -- - | cut -d\- -f3)"
+
+if [ ! -z "$REALVERSION"]; then 
+  version="$(echo $fname | grep -- - | cut -d\- -f3)"
+else
+  version="3312.28"
+fi
 
 mkdir -p $T/unpack && cd $T
 echo "Downloading stemcell..."
@@ -44,6 +49,8 @@ echo "Repackaging stemcell..."
 tar czf ../image root.img && cd ..
 rm -rf unpack2
 SHA1=$(sha1sum image)
+
+echo "Hardcoding stemcell version $version"
 
 cat <<EOF > stemcell.MF
 name: bosh-openstack-vmdk-ubuntu-trusty-go_agent-raw
